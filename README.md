@@ -1,2 +1,2 @@
-# Star-Wars
-Test pygame module game
+# Star Wars
+Test game "Star Wars" on python module Pygame
