@@ -31,6 +31,8 @@ player_img = pygame.image.load(os.path.join(img_folder, 'yoda.png'))
 player_img_in_action = pygame.image.load(os.path.join(img_folder, 'yodaFight.png'))
 opponent_img = pygame.image.load(os.path.join(img_folder, 'opponent.png'))
 bolt_img = pygame.image.load(os.path.join(img_folder, 'bolt.png'))
+back_img = pygame.image.load(os.path.join(img_folder, 'background2.jpg'))
+back_rect = back_img.get_rect()
 #create an object 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -57,7 +59,7 @@ class Opponent(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = opponent_img
         self.rect = self.image.get_rect()
-        self.rect.center = (width - 30, int(height/2)-20)
+        self.rect.center = (width - 300, int(height/2))
     def update(self):
         self.speedx = 0
         self.rect.x += self.speedx
@@ -73,7 +75,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (50,50))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.speedx = -1
+        self.speedx = -5
     def update(self):
         self.rect.x += self.speedx
         if self.rect.x < 0:
@@ -98,6 +100,7 @@ for i in range(3):
 #periodic shooting
 pygame.time.set_timer(SHOOTINGEVENT, 4000)
 #game cycle
+kill = True
 running = True
 while running:
     #FPS controlling
@@ -108,23 +111,27 @@ while running:
         #check for closing
         if event.type == pygame.QUIT:
             running = False
-        if event.type == SHOOTINGEVENT:
+        if event.type == SHOOTINGEVENT: #periodic shooting
             for o in opponents:
                 o.shoot()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for p in players:
-                hits = pygame.sprite.spritecollide(p, opponents, True)
-            bullet_hits = pygame.sprite.groupcollide(players, bullets, False, False)
-            for bullet in bullet_hits:
-                bullet.speedx = bullet.speedx*(-1)
-        else: bullet_hits = pygame.sprite.groupcollide(players, bullets, True, True)
-
+        if event.type == pygame.MOUSEBUTTONDOWN: #do not kill player when mouse down and kill opponent
+            if event.button == 1:
+                for p in players:
+                    hits = pygame.sprite.spritecollide(p, opponents, True) #
+                kill = False
+        elif event.type == pygame.MOUSEBUTTONUP: #kill when mouse upped
+             if event.button == 1:
+                kill = True
                 
     #update sprites
     all_sprites.update()
-    
+    bullet_hits = pygame.sprite.groupcollide(bullets, players, kill, kill)
+    if not kill:
+        for bullet in bullet_hits:
+            bullet.speedx = bullet.speedx*(-1)
     #render
     screen.fill(blue)
+    screen.blit(back_img, back_rect)
     #show sprites
     all_sprites.draw(screen)
     #after render - flip of the screen (optimising)
