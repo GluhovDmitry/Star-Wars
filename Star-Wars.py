@@ -19,6 +19,11 @@ black = (0, 0, 0)
 red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
+
+#create an event for shooting
+
+SHOOTINGEVENT = pygame.USEREVENT + 1
+
 #folder for resources
 game_folder = os.path.dirname(__file__)
 img_folder = os.path.join(game_folder, 'resources/img')
@@ -46,6 +51,7 @@ class Player(pygame.sprite.Sprite):
         if mousestate[0] == 0:
             self.image = player_img
         self.rect.x += self.speedx
+#mobs class
 class Opponent(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -59,6 +65,7 @@ class Opponent(pygame.sprite.Sprite):
         bullet = Bullet(self.rect.left, self.rect.centery)
         all_sprites.add(bullet)
         bullets.add(bullet)
+#bullet class
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -73,7 +80,7 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 #add group of sprites
 clock = pygame.time.Clock()
-
+#groups of sprites
 all_sprites = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 players = pygame.sprite.Group()
@@ -88,27 +95,34 @@ for i in range(3):
     o = Opponent()
     all_sprites.add(o)
     opponents.add(o)
+#periodic shooting
+pygame.time.set_timer(SHOOTINGEVENT, 4000)
 #game cycle
 running = True
 while running:
     #FPS controlling
     clock.tick(fps)
+
     #the list of events 
     for event in pygame.event.get():
         #check for closing
         if event.type == pygame.QUIT:
             running = False
+        if event.type == SHOOTINGEVENT:
+            for o in opponents:
+                o.shoot()
         if event.type == pygame.MOUSEBUTTONDOWN:
             for p in players:
                 hits = pygame.sprite.spritecollide(p, opponents, True)
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                for o in opponents:
-                    o.shoot()
+            bullet_hits = pygame.sprite.groupcollide(players, bullets, False, False)
+            for bullet in bullet_hits:
+                bullet.speedx = bullet.speedx*(-1)
+        else: bullet_hits = pygame.sprite.groupcollide(players, bullets, True, True)
+
+                
     #update sprites
     all_sprites.update()
-    bullet_hits = pygame.sprite.groupcollide(bullets, players, True, True)
-
+    
     #render
     screen.fill(blue)
     #show sprites
