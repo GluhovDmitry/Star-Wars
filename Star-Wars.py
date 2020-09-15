@@ -7,6 +7,9 @@ width = 800
 height = 400
 fps = 60
 
+a = 4 #acceleration
+g = 0.2 #gravity
+
 
 pygame.init() #load game
 pygame.mixer.init() #for sound
@@ -40,6 +43,12 @@ class Player(pygame.sprite.Sprite):
         self.image = player_img
         self.rect = self.image.get_rect()
         self.rect.center = (30, int(height/2))
+        self.onGround = True
+        self.speedy = 0
+        self.up = False
+        self.rotationSpeed = 7
+        self.rotation = 0
+        self.last_update = pygame.time.get_ticks()
     def update(self):
         self.speedx = 0
         keystate = pygame.key.get_pressed()
@@ -52,7 +61,28 @@ class Player(pygame.sprite.Sprite):
             self.image = player_img_in_action
         if mousestate[0] == 0:
             self.image = player_img
+ 
+        if self.rect.center[1] >= int(height/2):
+            self.onGround = True
+        else: self.onGround = False
+
+        if self.up:
+            if self.onGround:
+                self.speedy = -a
+                
+        elif not self.onGround:
+            self.rotate() 
+            self.speedy += g
+        elif self.onGround:
+            self.speedy = 0
         self.rect.x += self.speedx
+        self.rect.y += self.speedy
+    def rotate(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_update > 15:
+            self.last_update = now
+            self.rotation = (self.rotation + self.rotationSpeed) % 360
+            self.image = pygame.transform.rotate(self.image, self.rotation)
 #mobs class
 class Opponent(pygame.sprite.Sprite):
     def __init__(self):
@@ -105,7 +135,6 @@ running = True
 while running:
     #FPS controlling
     clock.tick(fps)
-
     #the list of events 
     for event in pygame.event.get():
         #check for closing
@@ -122,7 +151,10 @@ while running:
         elif event.type == pygame.MOUSEBUTTONUP: #kill when mouse upped
              if event.button == 1:
                 kill = True
-                
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
+            player.up = True
+        if event.type == pygame.KEYUP and event.key == pygame.K_w:
+            player.up = False
     #update sprites
     all_sprites.update()
     bullet_hits = pygame.sprite.groupcollide(bullets, players, kill, kill)
