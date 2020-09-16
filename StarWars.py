@@ -4,10 +4,9 @@ import os
 from player import *
 from opponent import *
 from bullet import *
-from groups import *
+from variables import *
 
-width = 800
-height = 400
+
 fps = 60
 
 pygame.init() #load game
@@ -16,19 +15,13 @@ pygame.mixer.init() #for sound
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Star Wars v 1.0")
 clock = pygame.time.Clock() # frames
-#colors
-black = (0, 0, 0)
-red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
+
 
 #create an event for shooting
 
 SHOOTINGEVENT = pygame.USEREVENT + 1
 
-#folder for resources
-game_folder = os.path.dirname(__file__)
-img_folder = os.path.join(game_folder, 'resources/img')
+
 back_img = pygame.image.load(os.path.join(img_folder, 'background2.jpg'))
 back_rect = back_img.get_rect()
 #add group of sprites

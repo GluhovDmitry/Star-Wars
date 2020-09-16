@@ -1,15 +1,12 @@
 import pygame 
 import random
 import os
+from variables import *
 
-width = 800
-height = 400
 
 a = 5 #acceleration
 g = 0.2 #gravity
 
-game_folder = os.path.dirname(__file__)
-img_folder = os.path.join(game_folder, 'resources/img')
 player_img = pygame.image.load(os.path.join(img_folder, 'yoda.png'))
 player_img_in_action = pygame.image.load(os.path.join(img_folder, 'yodaFight.png'))
 
