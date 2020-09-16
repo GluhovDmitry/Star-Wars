@@ -4,11 +4,14 @@ import os
 #groups of sprites
 players = pygame.sprite.Group()
 opponents = pygame.sprite.Group()
-all_sprites = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
+grassBlocks = pygame.sprite.Group() #grass sprites
 
-width = 800
-height = 400
+all_sprites = pygame.sprite.Group() 
+
+#screen size
+width = 1200
+height = 600
 
 #colors
 black = (0, 0, 0)

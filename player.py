@@ -4,7 +4,7 @@ import os
 from variables import *
 
 
-a = 5 #acceleration
+a = 7 #acceleration
 g = 0.2 #gravity
 
 player_img = pygame.image.load(os.path.join(img_folder, 'yoda.png'))
@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.image = player_img
         self.rect = self.image.get_rect()
         self.rect.center = (30, int(height/2))
-        self.onGround = True
+        self.onGround = False
         self.speedy = 0
         self.up = False
         self.rotationSpeed = 5
@@ -31,26 +31,34 @@ class Player(pygame.sprite.Sprite):
             self.speedx = 3
         if keystate[pygame.K_a] and self.rect.left > 0:
             self.speedx = -3
+            print(1)
         if mousestate[0] == 1:
             self.image = player_img_in_action
         if mousestate[0] == 0:
             self.image = player_img
- 
-        if self.rect.center[1] >= int(height/2):
-            self.onGround = True
-        else: self.onGround = False
-
+        self.isOnGround()
         if self.up:
             if self.onGround:
                 self.speedy = -a
                 
-        elif not self.onGround:
+        if not self.onGround:
             #self.rotate() 
             self.speedy += g
-        elif self.onGround:
-            self.speedy = 0
+
+        self.onGround = False
         self.rect.x += self.speedx
         self.rect.y += self.speedy
+        self.isOnGround()
+    def isOnGround(self):
+        #if self.rect.center[1] >= int(height/2):
+            #self.onGround = True
+        #else: self.onGround = False
+        for block in grassBlocks:
+            if pygame.sprite.collide_rect(self, block):
+                if self.speedy > 0:
+                    self.rect.bottom = block.rect.top 
+                    self.onGround = True 
+                    self.speedy = 0
     def rotate(self):
         now = pygame.time.get_ticks()
         if now - self.last_update > 15:

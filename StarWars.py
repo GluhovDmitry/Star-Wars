@@ -5,8 +5,9 @@ from player import *
 from opponent import *
 from bullet import *
 from variables import *
-
-
+from level1 import *
+from grass import *
+#frames
 fps = 60
 
 pygame.init() #load game
@@ -18,28 +19,53 @@ clock = pygame.time.Clock() # frames
 
 
 #create an event for shooting
-
 SHOOTINGEVENT = pygame.USEREVENT + 1
 
-
-back_img = pygame.image.load(os.path.join(img_folder, 'background2.jpg'))
+#images import
+back_img = pygame.image.load(os.path.join(img_folder, 'background.jpg'))
+back_img = pygame.transform.scale(back_img, (width, height)).convert()
 back_rect = back_img.get_rect()
+
+
 #add group of sprites
 clock = pygame.time.Clock()
+
 
 #instance of class Player
 player = Player()
 players.add(player)
+
 #add player to group of sprites
 all_sprites.add(player)
-#group of mobs
+
+#add to group of mobs
 for i in range(3):
     o = Opponent()
     all_sprites.add(o)
     opponents.add(o)
+
 #periodic shooting
 pygame.time.set_timer(SHOOTINGEVENT, 4000)
-#game cycle
+
+#create level
+x = y = 0
+block_width = 50
+block_height= 50
+for row in levelConstructor1:
+    for col in row:
+        if col == "-":
+            #block = pygame.Surface((block_width, block_height))
+            #block.fill(black)
+            #screen.blit(block, (x, y))
+            block = Grass(x, y)
+            all_sprites.add(block)
+            grassBlocks.add(block)
+        x += block_width
+    y += block_height
+    x = 0
+
+
+#main game cycle
 kill = True
 running = True
 while running:
@@ -53,7 +79,7 @@ while running:
         if event.type == SHOOTINGEVENT: #periodic shooting
             for o in opponents:
                 o.shoot()
-        if event.type == pygame.MOUSEBUTTONDOWN: #do not kill player when mouse down and kill opponent
+        if event.type == pygame.MOUSEBUTTONDOWN: #kill an opponent
             if event.button == 1:
                 for p in players:
                     hits = pygame.sprite.spritecollide(p, opponents, True) #
@@ -71,9 +97,11 @@ while running:
     if not kill:
         for bullet in bullet_hits:
             bullet.speedx = bullet.speedx*(-1)
+
     #render
     screen.fill(blue)
     screen.blit(back_img, back_rect)
+    
     #show sprites
     all_sprites.draw(screen)
     #after render - flip of the screen (optimising)
