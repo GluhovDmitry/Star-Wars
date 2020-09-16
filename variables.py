@@ -6,7 +6,7 @@ players = pygame.sprite.Group()
 opponents = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 grassBlocks = pygame.sprite.Group() #grass sprites
-
+coins = pygame.sprite.Group() #coin sprites
 all_sprites = pygame.sprite.Group() 
 
 #screen size

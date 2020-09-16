@@ -7,6 +7,7 @@ from bullet import *
 from variables import *
 from level1 import *
 from grass import *
+from coin import *
 #frames
 fps = 60
 
@@ -60,6 +61,10 @@ for row in levelConstructor1:
             block = Grass(x, y)
             all_sprites.add(block)
             grassBlocks.add(block)
+        if col == "*":
+            coin = Coin(x, y)
+            all_sprites.add(coin)
+            coins.add(coin)
         x += block_width
     y += block_height
     x = 0
